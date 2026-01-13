@@ -21,7 +21,7 @@ class Home(Resource):
     def get(self):
         
         response_dict = {
-            "message": "Welcome to the Newsletter RESTful API",
+            "index": "Welcome to the Newsletter RESTful API",
         }
         
         response = make_response(
@@ -76,6 +76,40 @@ class NewsletterByID(Resource):
         response = make_response(
             response_dict,
             200,
+        )
+
+        return response
+
+    def patch(self, id):
+
+        record = Newsletter.query.filter_by(id=id).first()
+        for attr in request.form:
+            setattr(record, attr, request.form[attr])
+
+        db.session.add(record)
+        db.session.commit()
+
+        response_dict = record.to_dict()
+
+        response = make_response(
+            response_dict,
+            200
+        )
+
+        return response
+
+    def delete(self, id):
+
+        record = Newsletter.query.filter_by(id=id).first()
+
+        db.session.delete(record)
+        db.session.commit()
+
+        response_dict = {"message": "record successfully deleted"}
+
+        response = make_response(
+            response_dict,
+            200
         )
 
         return response
